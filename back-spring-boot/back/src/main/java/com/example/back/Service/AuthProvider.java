@@ -49,7 +49,6 @@ public class AuthProvider {
 
     // request 객체 헤더에 담겨 있는 토큰 가져오기
     public String resolveToken(HttpServletRequest request) {
-
         if (request.getHeader("accesstoken") == null) return null;
         return request.getHeader("accesstoken").replace(BEARER_TYPE, "");
     }
