@@ -1,0 +1,44 @@
+create table sequences(
+	name varchar(20),
+	currval bigint unsigned
+) 
+
+Delimiter $$
+	create procedure `create_sequence` (in the_name text)
+	modifies sql data
+	deterministic
+	begin
+	delete from sequences where name = the_name;
+	insert into sequences values(the_name, 0);
+end;
+
+
+delimiter $$
+	create function `nextval` (the_name varchar(20))
+	returns bigint unsigned
+	modifies sql data
+	deterministic
+	begin
+	declare ret bigint unsigned;
+	update sequences set currval = currval + 1 where name = the_name;
+	select currval into ret from sequences where name = the_name limit 1;
+	return ret;
+end;
+
+
+delimiter $$
+	create function `currval` (the_name varchar(20))
+	returns bigint unsigned
+	deterministic
+	begin
+	eclare ret bigint unsigned;
+	select currval into ret from sequences where name = the_name limit 1;
+	return ret;
+end $$
+
+
+CALL create_sequence('comment_idx');
+select currval('comment_idx') from dual;
+select nextval('comment_idx') from dual;
+
+?

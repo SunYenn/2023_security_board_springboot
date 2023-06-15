@@ -1,0 +1,35 @@
+CREATE TABLE `board` (
+  `idx` int NOT NULL AUTO_INCREMENT,
+  `nickname` varchar(20) NOT NULL,
+  `title` varchar(1000) NOT NULL,
+  `contents` varchar(3000) NOT NULL,
+  `ORIFILENAME` varchar(3000) DEFAULT NULL,
+  `REALFILENAME` varchar(3000) DEFAULT NULL,
+  `WRITEDATE` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `views` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`idx`)
+)
+
+CREATE TABLE `comment` (
+  `board_idx` int NOT NULL,
+  `idx` int NOT NULL,
+  `nickname` varchar(20) NOT NULL,
+  `contents` varchar(3000) NOT NULL,
+  `WRITEDATE` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `gup` int NOT NULL DEFAULT '0',
+  `seq` int NOT NULL DEFAULT '0',
+  `step` int NOT NULL DEFAULT '0',
+  `status` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`idx`),
+  KEY `board_idx` (`board_idx`),
+  CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`board_idx`) REFERENCES `board` (`idx`) ON UPDATE CASCADE
+) 
+
+CREATE TABLE `user` (
+  `id` varchar(20) NOT NULL,
+  `pw` varchar(2000) NOT NULL,
+  `nickname` varchar(20) NOT NULL,
+  `email` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`,`nickname`),
+  UNIQUE KEY `nickname_UNIQUE` (`nickname`)
+)
