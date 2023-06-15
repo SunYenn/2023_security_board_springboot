@@ -115,8 +115,9 @@ public class BoardCtrl {
     @PostMapping("/comment/insert") // 댓글 등록
     public void commentInsert(@RequestBody CommentVO vo) {
         vo.setNickname(AuthUtil.getNickname()); // 로그인 계정 정보 값 얻어와서 이름 지정
+        log.info("vo : {}", vo);
         if (vo.getStep() == 1) {
-            vo.setGup(mapper.getGup(vo.getBoard_idx()) + 1);
+            vo.setGup(mapper.getGup(vo.getBoard_idx()));
         } else {
             mapper.setSeqs(vo);
         }

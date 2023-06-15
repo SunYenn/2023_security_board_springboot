@@ -101,7 +101,7 @@
     </update>
 
     <select id="getGup" parameterType="int" resultType="int">
-        SELECT IFNULL(Max(gup),1) from comment where board_idx = #{board_idx}
+        SELECT IFNULL(Max(gup) + 1,1) from comment where board_idx = #{board_idx}
     </select>
 
     <update id="setSeqs" parameterType="com.example.back.VO.CommentVO">
