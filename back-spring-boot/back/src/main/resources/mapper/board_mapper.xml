@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.back.Repository.BoardMapper" >
+
+    <select id="countBoard" parameterType="com.example.back.VO.PagingVO" resultType="int">
+        select count(*)
+        from board
+        where 1 = 1
+        <if test='search_category eq "title"'>
+            and title
+                like concat('%',#{search_obj},'%')
+        </if>
+        <if test='search_category eq "nickname"'>
+            and nickname
+                like concat('%',#{search_obj},'%')
+        </if>
+        <if test='search_category eq "title_nickname"'>
+            and nickname
+                like concat('%',#{search_obj},'%')
+            or title
+                like concat('%',#{search_obj},'%')
+        </if>
+    </select>
+
+    <select id="selectBoardList" parameterType="com.example.back.VO.PagingVO" resultType="com.example.back.VO.BoardVO">
+        SELECT *,row_number() over(order by idx desc) as rnum
+        FROM board
+        where 1 = 1
+        <if test='search_category eq "title"'>
+            and title
+                like concat('%',#{search_obj},'%')
+        </if>
+        <if test='search_category eq "nickname"'>
+            and nickname
+                like concat('%',#{search_obj},'%')
+        </if>
+        <if test='search_category eq "title_nickname"'>
+            and nickname
+                like concat('%',#{search_obj},'%')
+            or title
+                like concat('%',#{search_obj},'%')
+        </if>
+        order by idx desc LIMIT #{start_no},#{page_size}
+    </select>
+
+    <select id="selectBoardByIdx" parameterType="int" resultType="com.example.back.VO.BoardVO">
+        SELECT
+            *
+        FROM board
+        where idx = #{idx}
+    </select>
+
+    <update id="incrementViews" parameterType="int">
+        update board
+            set views = views + 1
+        where idx = #{idx}
+    </update>
+
+    <select id="selectCommentByIdx" parameterType="int" resultType="com.example.back.VO.CommentVO">
+        select * from comment where board_idx = #{idx} order by gup desc, seq asc
+    </select>
+
+    <insert id="insertBoard" parameterType="com.example.back.VO.BoardVO">
+        insert into board(nickname, title, contents, orifilename, realfilename) values (#{nickname}, #{title},#{contents},#{orifilename},#{realfilename})
+    </insert>
+
+    <select id="countBoardByOrifilename" parameterType="String" resultType="int">
+        select count(*) from board where orifilename=#{orifilename}
+    </select>
+
+    <delete id="deleteBoardByIdx" parameterType="int">
+        delete from board where idx = #{idx}
+    </delete>
+
+    <delete id="deleteCommentByIdx" parameterType="int">
+        delete from comment where board_idx = #{idx}
+    </delete>
+
+    <update id="updateBoard" parameterType="com.example.back.VO.BoardVO">
+        update board set title = #{title}, contents = #{contents} where idx = #{idx}
+    </update>
+
+    <insert id="insertComment" parameterType="com.example.back.VO.CommentVO">
+        <selectKey keyProperty="idx" resultType="int" order="BEFORE">
+            SELECT nextval('comment_idx')
+        </selectKey>
+        insert into comment(board_idx, idx, nickname, contents, gup, seq, step)
+        values (#{board_idx}, #{idx}, #{nickname},#{contents}, #{gup}, #{seq}, #{step})
+    </insert>
+
+    <update id="updateComment" parameterType="com.example.back.VO.BoardVO">
+        update comment set contents = #{contents} where idx = #{idx}
+    </update>
+
+    <update id="deleteComment" parameterType="int">
+        update comment set status = 1 where idx = #{idx}
+    </update>
+
+    <update id="restoreComment" parameterType="int">
+        update comment set status = 0 where idx = #{idx}
+    </update>
+
+    <select id="getGup" parameterType="int" resultType="int">
+        SELECT IFNULL(Max(gup),1) from comment where board_idx = #{board_idx}
+    </select>
+
+    <update id="setSeqs" parameterType="com.example.back.VO.CommentVO">
+        update comment set seq = seq + 1 where gup = #{gup} and seq >= #{seq}
+    </update>
+</mapper>
