@@ -65,6 +65,7 @@ public class BoardCtrl {
     @PostMapping(value = "/upload", consumes = "multipart/form-data") // 파일 업로드
     public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
 
+        log.info("hi");
         int fileCount = mapper.countBoardByOrifilename(file.getOriginalFilename());
 
         String location = "D:/upload/board/";
@@ -91,10 +92,10 @@ public class BoardCtrl {
             HttpServletResponse response) throws IOException
     {
         String fileName = requestData.get("fileName");
-        String filePath = "D:/upload/board/" + fileName; // 파일 경로 생성
+        String filePath = "D:/upload/board/" + fileName; // 파일 경로 생성, D:/upload/board/ 폴더가 있어야함.
 
         File file = new File(filePath);
-        InputStream inputStream = new FileInputStream(file); // 파일을 읽기 위한 개게 생성
+        InputStream inputStream = new FileInputStream(file); // 파일을 읽기 위한 객체 생성
 
         response.setContentType("application/octet-stream"); // 다운로드할 파일의 바이너리 데이터임을 설정
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
